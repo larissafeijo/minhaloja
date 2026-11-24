@@ -1,0 +1,35 @@
+CASCA INSTALÁVEL "MINHA LOJA" (gratuita, GitHub Pages)
+
+O que é: uma página que se instala no celular como app (ícone próprio, tela cheia)
+e abre dentro dela o app do Caderno da loja de cada MEI. Uma casca serve para todos.
+Os dados NÃO passam pela casca: continuam no Google de cada MEI.
+
+PUBLICAR (uma vez só, ~10 min)
+1. Crie uma conta grátis em github.com.
+2. Clique em "+" > New repository. Nome: minhaloja. Marque Public. Create repository.
+3. Clique em "uploading an existing file" e arraste TODO o conteúdo desta pasta
+   (index.html, manifest.webmanifest, sw.js e a pasta icones). Commit changes.
+4. Settings > Pages > Source: Deploy from a branch > Branch: main / (root) > Save.
+5. Em 1 a 2 minutos o endereço aparece: https://SEU-USUARIO.github.io/minhaloja/
+
+EM CADA CADERNO DA LOJA (antes de entregar)
+- Cole o App.gs novo no Apps Script (ele já tem a linha ALLOWALL, que deixa o app abrir na casca)
+  e publique NOVA VERSÃO (Implantar > Gerenciar implantações > editar > Nova versão).
+
+LINK PERSONALIZADO PARA CADA MEI (recomendado)
+  https://SEU-USUARIO.github.io/minhaloja/?app=LINK-DO-EXEC-DA-LOJA
+  A MEI abre esse link no Chrome e o app já fica configurado.
+
+INSTALAR NO CELULAR DA MEI
+- Android (Chrome): abra o link > menu ⋮ > "Instalar app" (ou o aviso que aparece embaixo).
+- iPhone (Safari): botão Compartilhar > "Adicionar à Tela de Início".
+  No iPhone, na 1ª vez que abrir pelo ícone, cole o link /exec (o iPhone não leva o link do Safari).
+
+SE O APP FICAR EM BRANCO DENTRO DA CASCA
+- Toque em "Ficou em branco? Toque aqui" > "Abrir no navegador" (sempre funciona).
+- Causa provável: o celular bloqueia o login do Google dentro de outro site
+  (comum no iPhone). Plano B: no Apps Script, publicar com "Executar como: Eu" e
+  "Quem pode acessar: Qualquer pessoa". Aí não precisa de login, mas quem tiver o link
+  consegue abrir o app: trate o link como senha e não o compartilhe.
+
+ATUALIZAR A CASCA: troque os arquivos no GitHub e mude VERSAO em sw.js (ex.: casca-v2).

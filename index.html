@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Minha loja</title>
+<meta name="theme-color" content="#C55A11">
+<meta name="description" content="App gratuito para MEI: vendas, clientes e estoque ligados ao seu Caderno da loja no Google.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icones/icone-192.png">
+<link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Minha loja">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+  :root { --cor: #C55A11; --cor2: #FCE4D6; --texto: #222; --sub: #666; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #faf7f5; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--texto); }
+  #app { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: none; background: #fff; }
+  .tela { display: none; min-height: 100%; padding: 28px 20px calc(28px + env(safe-area-inset-bottom)); max-width: 480px; margin: 0 auto; }
+  .tela.ativa { display: block; }
+  .topo { text-align: center; margin-bottom: 20px; }
+  .topo img { width: 84px; height: 84px; border-radius: 20px; }
+  h1 { font-size: 22px; margin: 12px 0 4px; } p { line-height: 1.45; }
+  .sub { color: var(--sub); font-size: 15px; margin: 0; }
+  label { display: block; font-size: 14px; color: var(--sub); margin: 18px 0 6px; }
+  textarea { width: 100%; min-height: 92px; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 12px; resize: vertical; font-family: inherit; }
+  textarea:focus { outline: 2px solid var(--cor); border-color: var(--cor); }
+  .btn { display: block; width: 100%; padding: 15px; font-size: 17px; font-weight: 600; border: 0; border-radius: 12px; background: var(--cor); color: #fff; margin-top: 14px; cursor: pointer; text-align: center; text-decoration: none; }
+  .btn.sec { background: #fff; color: var(--cor); border: 2px solid var(--cor); }
+  .erro { color: #C62828; font-size: 14px; margin-top: 8px; min-height: 18px; }
+  .passos { background: #fff; border: 1px solid #e5ddd7; border-radius: 12px; padding: 4px 16px; margin-top: 22px; font-size: 15px; }
+  .passos ol { padding-left: 20px; } .passos li { margin: 6px 0; }
+  .ajuda-chip { position: fixed; left: 50%; top: calc(70px + env(safe-area-inset-top)); white-space: nowrap; transform: translateX(-50%); z-index: 20; background: rgba(34,34,34,.88); color: #fff; border: 0; border-radius: 999px; padding: 9px 16px; font-size: 14px; display: none; box-shadow: 0 2px 10px rgba(0,0,0,.2); transition: opacity .5s; }
+  .folha { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: flex-end; justify-content: center; z-index: 30; }
+  .folha .caixa { background: #fff; width: 100%; max-width: 480px; border-radius: 18px 18px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom)); }
+  .folha h2 { font-size: 18px; margin: 4px 0 6px; }
+  .instalar { display: none; margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<!-- 1º uso: colar o link do app da loja -->
+<section class="tela" id="t-config">
+  <div class="topo">
+    <img src="icones/icone-192.png" alt="">
+    <h1>Minha loja</h1>
+    <p class="sub">App gratuito para o seu negócio. Seus dados ficam no seu Google.</p>
+  </div>
+  <label for="link">Cole aqui o link do app da sua loja</label>
+  <textarea id="link" placeholder="https://script.google.com/macros/s/.../exec" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+  <div class="erro" id="erro"></div>
+  <button class="btn" onclick="salvarLink()">Abrir o app</button>
+  <button class="btn sec instalar" id="b-instalar" onclick="instalar()">📲 Instalar no celular</button>
+  <div class="passos">
+    <p><b>Onde acho esse link?</b></p>
+    <ol>
+      <li>Quem instalou o app no seu Caderno da loja recebeu um link que termina em <b>/exec</b>.</li>
+      <li>Peça esse link para a consultora (ou veja no Apps Script: Implantar &gt; Gerenciar implantações).</li>
+      <li>Você só faz isso uma vez. Depois o app abre direto.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- sem internet -->
+<section class="tela" id="t-offline">
+  <div class="topo"><img src="icones/icone-192.png" alt=""><h1>Sem internet agora</h1>
+    <p class="sub">O app precisa de internet para salvar no seu Caderno da loja. Anote a venda no papel e lance quando o sinal voltar.</p></div>
+  <button class="btn" onclick="abrirApp()">Tentar de novo</button>
+</section>
+
+<iframe id="app" title="Minha loja" allow="camera; clipboard-write; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+<button class="ajuda-chip" id="chip" onclick="abrirAjuda()">Ficou em branco? Toque aqui</button>
+
+<div class="folha" id="ajuda"><div class="caixa">
+  <h2>O app não apareceu?</h2>
+  <p class="sub">Às vezes o celular não deixa o Google entrar com a sua conta dentro do app instalado. Escolha uma opção:</p>
+  <button class="btn" onclick="abrirNoNavegador()">Abrir no navegador</button>
+  <button class="btn sec" onclick="fecharAjuda(); abrirApp()">Tentar de novo</button>
+  <button class="btn sec" onclick="trocarLink()">Trocar o link da loja</button>
+  <button class="btn sec" style="border:0" onclick="fecharAjuda()">Fechar</button>
+</div></div>
+
+<script>
+var CHAVE = 'minhaLoja.link';
+var $ = function (id) { return document.getElementById(id); };
+var pedidoInstalar = null;
+
+// aceita só links de app do Google Apps Script (contas comuns e de empresa/escola)
+function extrairLink(texto) {
+  var m = String(texto || '').match(/https:\/\/script\.google\.com\/(?:a\/macros\/[A-Za-z0-9.\-]+|macros)\/s\/[A-Za-z0-9_\-]+\/exec/);
+  return m ? m[0] : '';
+}
+function ler() { try { return localStorage.getItem(CHAVE) || ''; } catch (e) { return ''; } }
+function guardar(v) { try { if (v) localStorage.setItem(CHAVE, v); else localStorage.removeItem(CHAVE); } catch (e) {} }
+
+function mostrar(id) {
+  document.querySelectorAll('.tela').forEach(function (t) { t.classList.toggle('ativa', t.id === id); });
+  $('app').style.display = id ? 'none' : 'block';
+}
+
+function salvarLink() {
+  var link = extrairLink($('link').value);
+  if (!link) { $('erro').textContent = 'Esse link não parece o do app. Ele começa com https://script.google.com e termina em /exec.'; return; }
+  $('erro').textContent = ''; guardar(link); abrirApp();
+}
+
+function abrirApp() {
+  var link = ler();
+  if (!link) { mostrar('t-config'); return; }
+  if (!navigator.onLine) { mostrar('t-offline'); return; }
+  mostrar(null);
+  var f = $('app');
+  if (f.getAttribute('src') !== link) f.setAttribute('src', link); else f.src = link;
+  mostrarChip();
+}
+
+var chipTimer = null;
+function mostrarChip() {
+  var c = $('chip'); c.style.opacity = '1'; c.style.display = 'block';
+  clearTimeout(chipTimer);
+  chipTimer = setTimeout(function () { c.style.opacity = '0'; setTimeout(function () { c.style.display = 'none'; }, 500); }, 12000);
+}
+function abrirAjuda() { $('ajuda').style.display = 'flex'; }
+function fecharAjuda() { $('ajuda').style.display = 'none'; }
+function abrirNoNavegador() { fecharAjuda(); var l = ler(); if (l) window.open(l, '_blank'); }
+function trocarLink() { fecharAjuda(); $('link').value = ler(); $('app').removeAttribute('src'); mostrar('t-config'); $('link').focus(); }
+
+// link personalizado: .../?app=<link do /exec> já deixa o app configurado
+(function () {
+  var p = new URLSearchParams(location.search), veio = extrairLink(p.get('app') || '');
+  if (veio) { guardar(veio); history.replaceState(null, '', location.pathname); }
+})();
+
+window.addEventListener('online', function () { if ($('t-offline').classList.contains('ativa')) abrirApp(); });
+window.addEventListener('offline', function () { if (!ler()) return; mostrar('t-offline'); });
+
+// botão "Instalar" (Chrome/Android mostra o pedido de instalação)
+window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); pedidoInstalar = e; $('b-instalar').style.display = 'block'; });
+function instalar() { if (!pedidoInstalar) return; pedidoInstalar.prompt(); pedidoInstalar.userChoice.finally(function () { pedidoInstalar = null; $('b-instalar').style.display = 'none'; }); }
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+abrirApp();
+</script>
+</body>
+</html>
